@@ -1,6 +1,8 @@
 # make_fake_users.py
 from django.contrib.auth import get_user_model
 from faker import Faker
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.chattingbackend.settings")
 
 fake = Faker()
 # Delete all users

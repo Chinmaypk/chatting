@@ -1,8 +1,10 @@
 import type { User } from '$lib/types/user.interface';
 
-export const BASE_API_URI = import.meta.env.DEV
-	? import.meta.env.VITE_BASE_API_URI_DEV
-	: import.meta.env.VITE_BASE_API_URI_PROD;
+// export const BASE_API_URI = import.meta.env.DEV
+// 	? import.meta.env.VITE_BASE_API_URI_DEV
+// 	: import.meta.env.VITE_BASE_API_URI_PROD;
+
+export const BASE_API_URI = "http://127.0.0.1:8000/api";
 
 export const BASE_URI = BASE_API_URI.split('/api')[0];
 

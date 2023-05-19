@@ -10,6 +10,7 @@ from chat.models import Message
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print("This is the main game", self)
         current_user_id = self.scope['user'].id if self.scope['user'].id else int(self.scope['query_string'])
         other_user_id = self.scope['url_route']['kwargs']['id']
         self.room_name = (
@@ -27,6 +28,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.disconnect(close_code)
 
     async def receive(self, text_data=None, bytes_data=None):
+        print("This is the main game", self)
         data = json.loads(text_data)
         message = data['message']
         sender_username = data['senderUsername'].replace('"', '')
