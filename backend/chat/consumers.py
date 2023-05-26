@@ -30,7 +30,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data=None, bytes_data=None):
         print("This is the main game", self)
         data = json.loads(text_data)
-        message = data['message']
+        try :
+            message = data['message']
+        except:
+            message = data['file']
         sender_username = data['senderUsername'].replace('"', '')
         sender = await self.get_user(sender_username.replace('"', ''))
 

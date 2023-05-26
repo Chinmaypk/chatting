@@ -4,7 +4,7 @@
 	import { session } from '$lib/store/user.store';
 	import You from '$lib/components/Message/You.svelte';
 	import Other from '$lib/components/Message/Other.svelte';
-	import { messages, sendMessage } from '$lib/store/message.store';
+	import { messages, sendMessage, sendFile } from '$lib/store/message.store';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import { BASE_URI_DOMAIN } from '$lib/constants';
@@ -90,26 +90,34 @@
 			$messages = messageList;
 			messageInput = '';
 		});
+
+		
 	}
-	async function myfunc() {
-		await getConn();
+	function myfunc() {
+		return new Promise((resolve) => {
+			resolve(getConn());
+		});
 	}
 
-	function sleep(time) {
+	function sleep(time: number) {
 		return new Promise((resolve) => setTimeout(resolve, time));
 	}
 
 	// Usage!
-	
-	const handleSendMessage = (event: MouseEvent) => {
-		event.preventDefault();
-		myfunc();
 
-		sleep(1000).then(() => {
-		// Do something after the sleep!
-		
+	async function handleSendMessage(event: MouseEvent) {
+		event.preventDefault();
+		// let t = await myfunc();
+		getConn();
+		sleep(100).then(() => {
 			sendMessage(messageInput, $session.user.username as string, socket);
 		});
+
+		// myfunc().then(() => {
+		// // Do something after the sleep!
+		// 	console.log("hihihi");
+		// 	sendMessage(messageInput, $session.user.username as string, socket);
+		// });
 		// if (browser) {
 		// 	// var u1 = parseInt(${JSON.parse(data.context.user_object.toString())[0].pk});
 		// 	// if (JSON.parse(data.context.user_object)[0].pk < session.user.pk ) {
@@ -139,13 +147,84 @@
 		// 	sendMessage(messageInput, $session.user.username as string, socket);
 		// 	}
 		// );
+	}
+	var file;
+	const uploadFile = (): Promise<string> => {
+		return new Promise((resolve) => {
+			resolve(document.getElementById('input-file').click());
+		});
+	};
+	const clickSubmit = (): Promise<string> => {
+		return new Promise((resolve) => {
+			resolve(document.getElementById('submit-file').click());
+		});
 	};
 
-	const handleSendFile = (event: MouseEvent) => {
-		// event.preventDefault();
-		// sendMessage(messageInput, $session.user.username as string, socket);
-		document.getElementById('input-file').click();
+	const getFile = (): Promise<string> => {
+		return new Promise((resolve) => {
+			resolve(document.getElementById('input-file').click());
+		});
 	};
+
+	// async function handleSendFile (event: MouseEvent) {
+	// 	// event.preventDefault();
+
+	// 	// sendMessage(messageInput, $session.user.username as string, socket);
+	// 	// var temp = await document.getElementById('input-file').click();
+	// 	// file =  document.getElementById('input-file').files;
+	// 	var x = await document.getElementById('submit-file')?.click();
+
+	// };
+
+	const handleSendFile = async (event: MouseEvent) => {
+		console.log('submit');
+		var t = await uploadFile();
+		var t2 = (await clickSubmit()) && t;
+		file = document.getElementById('input-file').files;
+		console.log(file);
+	};
+
+	let fileData: string ;
+
+	const readFile = (file: File): Promise<string> => {
+		return new Promise((resolve) => {
+			const reader = new FileReader();
+			console.log(reader.result)
+			reader.onload = () => resolve(reader.result as string);
+			if (file){
+				
+			reader.readAsDataURL(file);
+			console.log(reader.result)
+			}
+		});
+	};
+
+	const handleFileUpload = async (event: SubmitEvent) => {
+		console.log("ji")
+		const formData = new FormData(event.target as HTMLFormElement);
+		const file = formData.get('file') as File;
+		console.log("Here", file);
+		fileData = await readFile(file);
+		console.log("Here again");
+		console.log(fileData)
+		sendFile(fileData, $session.user.username as string, socket);
+		send(fileData);
+	};
+
+	function send(file: string) {
+		getConn();
+		sleep(100).then(() => {
+			sendFile(file, $session.user.username as string, socket);
+		});
+		sleep(100).then(() => {
+			console.log("File sent")
+		});
+	}
+
+	// const handleFileUpload = async (event: SubmitEvent) => {
+	// 	file =  await document.getElementById('input-file').files[0];
+
+	// };
 </script>
 
 <div class="container py-5">
@@ -169,7 +248,16 @@
 					{/if}
 				{/each}
 			</ul>
-			<input id="input-file" type="file" name="somename" style="visibility:collapse" />
+
+			<!-- <input id="input-file" type="file" name="somename" style="visibility:collapse" /> -->
+
+			<form style="" on:submit|preventDefault={handleFileUpload}>
+				<div class="group">
+					<input type="file" id="file" name="file" />
+				</div>
+
+				<button type="submit">Submit</button>
+			</form>
 			<div
 				class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2 message-control"
 			>

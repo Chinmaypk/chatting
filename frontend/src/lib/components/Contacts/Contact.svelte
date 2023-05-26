@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let contacts: any;
-	import type { PageData } from '$../../types';
+	import type { PageData } from './$types';
 	import { session } from '$lib/store/user.store';
 	import { messages, sendMessage } from '$lib/store/message.store';
 	import { browser } from '$app/environment';

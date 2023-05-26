@@ -32,4 +32,15 @@ const sendMessage = (message: string, senderUsername: string, socket: WebSocket)
 	}
 };
 
-export { messages, sendMessage };
+const sendFile = (file: string, senderUsername: string, socket: WebSocket) => {
+	if (socket.readyState <= 1) {
+		socket.send(
+			JSON.stringify({
+				file: file,
+				senderUsername: senderUsername
+			})
+		);
+	}
+};
+
+export { messages, sendMessage , sendFile};
